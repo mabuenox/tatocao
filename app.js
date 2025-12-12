@@ -204,7 +204,7 @@ function renderAvailabilityMatrix() {
             checkbox.className = 'availability-checkbox';
             checkbox.checked = isAvailable;
             checkbox.title = isAvailable ? 'Disponible' : 'Ausente';
-            checkbox.addEventListener('change', () => toggleAvailability(member, key));
+            checkbox.addEventListener('change', (e) => toggleAvailability(member, key, e.target.checked));
             
             td.appendChild(checkbox);
             row.appendChild(td);
@@ -220,9 +220,9 @@ function renderAvailabilityMatrix() {
 }
 
 // Toggle availability
-function toggleAvailability(member, dateKey) {
-    // Toggle the value (from true to false or false to true)
-    state.availability[member][dateKey] = !state.availability[member][dateKey];
+function toggleAvailability(member, dateKey, isChecked) {
+    // Set availability based on checkbox state
+    state.availability[member][dateKey] = isChecked;
 }
 
 // Generate assignment
