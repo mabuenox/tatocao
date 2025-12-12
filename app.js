@@ -82,12 +82,23 @@ function renderMembers() {
         return;
     }
 
-    elements.membersList.innerHTML = state.members.map(member => `
-        <div class="member-tag">
-            <span>${member}</span>
-            <button class="btn-danger" onclick="removeMember('${member}')">×</button>
-        </div>
-    `).join('');
+    elements.membersList.innerHTML = '';
+    state.members.forEach((member, index) => {
+        const memberTag = document.createElement('div');
+        memberTag.className = 'member-tag';
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = member;
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'btn-danger';
+        removeBtn.textContent = '×';
+        removeBtn.addEventListener('click', () => removeMember(member));
+        
+        memberTag.appendChild(nameSpan);
+        memberTag.appendChild(removeBtn);
+        elements.membersList.appendChild(memberTag);
+    });
 }
 
 // Update start date
@@ -149,37 +160,68 @@ function renderAvailabilityMatrix() {
         return;
     }
 
-    let html = '<table class="matrix-table"><thead><tr><th>Miembro</th>';
+    const table = document.createElement('table');
+    table.className = 'matrix-table';
     
-    // Header with dates
+    // Create header
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    
+    const memberHeader = document.createElement('th');
+    memberHeader.textContent = 'Miembro';
+    headerRow.appendChild(memberHeader);
+    
     sprintDays.forEach(day => {
-        html += `<th>${formatDate(day)}</th>`;
+        const th = document.createElement('th');
+        th.textContent = formatDate(day);
+        headerRow.appendChild(th);
     });
-    html += '</tr></thead><tbody>';
     
-    // Rows for each member
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+    
+    // Create body
+    const tbody = document.createElement('tbody');
+    
     state.members.forEach(member => {
-        html += `<tr><td>${member}</td>`;
+        const row = document.createElement('tr');
+        
+        const memberCell = document.createElement('td');
+        memberCell.textContent = member;
+        row.appendChild(memberCell);
+        
         sprintDays.forEach(day => {
             const key = dateToKey(day);
-            const isAvailable = state.availability[member][key] !== false;
-            html += `<td>
-                <input type="checkbox" 
-                       class="availability-checkbox" 
-                       ${isAvailable ? 'checked' : ''}
-                       onchange="toggleAvailability('${member}', '${key}')"
-                       title="${isAvailable ? 'Disponible' : 'Ausente'}">
-            </td>`;
+            // Initialize availability to true if not set
+            if (state.availability[member][key] === undefined) {
+                state.availability[member][key] = true;
+            }
+            const isAvailable = state.availability[member][key];
+            
+            const td = document.createElement('td');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'availability-checkbox';
+            checkbox.checked = isAvailable;
+            checkbox.title = isAvailable ? 'Disponible' : 'Ausente';
+            checkbox.addEventListener('change', () => toggleAvailability(member, key));
+            
+            td.appendChild(checkbox);
+            row.appendChild(td);
         });
-        html += '</tr>';
+        
+        tbody.appendChild(row);
     });
     
-    html += '</tbody></table>';
-    elements.availabilityMatrix.innerHTML = html;
+    table.appendChild(tbody);
+    
+    elements.availabilityMatrix.innerHTML = '';
+    elements.availabilityMatrix.appendChild(table);
 }
 
 // Toggle availability
 function toggleAvailability(member, dateKey) {
+    // Toggle the value (from true to false or false to true)
     state.availability[member][dateKey] = !state.availability[member][dateKey];
 }
 
@@ -201,9 +243,9 @@ function generateAssignment() {
     sprintDays.forEach(day => {
         const dateKey = dateToKey(day);
         
-        // Get available members for this day
+        // Get available members for this day (those with true availability)
         const availableMembers = state.members.filter(member => {
-            return state.availability[member][dateKey] !== false;
+            return state.availability[member][dateKey] === true;
         });
         
         if (availableMembers.length === 0) {
@@ -274,10 +316,6 @@ function copyToClipboard() {
         console.error('Copy error:', err);
     });
 }
-
-// Make functions available globally
-window.removeMember = removeMember;
-window.toggleAvailability = toggleAvailability;
 
 // Initialize app
 init();
