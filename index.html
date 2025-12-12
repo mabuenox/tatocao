@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tatocao - Daily Facilitator Scheduler</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 Tatocao</h1>
+            <p class="subtitle">Asigna facilitadores de Daily automáticamente</p>
+        </header>
+
+        <main>
+            <!-- Sprint Configuration -->
+            <section class="card">
+                <h2>⚙️ Configuración del Sprint</h2>
+                <div class="form-group">
+                    <label for="startDate">Fecha de inicio del sprint:</label>
+                    <input type="date" id="startDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="sprintDuration">Duración (semanas):</label>
+                    <input type="number" id="sprintDuration" value="2" min="1" max="4" required>
+                </div>
+            </section>
+
+            <!-- Team Members -->
+            <section class="card">
+                <h2>👥 Miembros del Equipo</h2>
+                <div class="form-group">
+                    <label for="memberName">Nombre del miembro:</label>
+                    <div class="input-with-button">
+                        <input type="text" id="memberName" placeholder="Escribe un nombre...">
+                        <button id="addMemberBtn" class="btn btn-primary">Agregar</button>
+                    </div>
+                </div>
+                <div id="membersList" class="members-list"></div>
+            </section>
+
+            <!-- Availability Matrix -->
+            <section class="card">
+                <h2>📅 Disponibilidad</h2>
+                <p class="info-text">Marca los días en que cada miembro estará ausente:</p>
+                <div id="availabilityMatrix" class="availability-matrix"></div>
+            </section>
+
+            <!-- Generate Button -->
+            <div class="action-section">
+                <button id="generateBtn" class="btn btn-large btn-success">
+                    ✨ Generar Asignación
+                </button>
+            </div>
+
+            <!-- Results -->
+            <section id="resultsSection" class="card results-section" style="display: none;">
+                <h2>📋 Asignación de Facilitadores</h2>
+                <div id="resultsContainer"></div>
+                <button id="copyBtn" class="btn btn-primary">
+                    📋 Copiar para Teams
+                </button>
+            </section>
+        </main>
+
+        <footer>
+            <p>Tatocao - Facilitador de Daily Sprint</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
